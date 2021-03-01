@@ -167,7 +167,8 @@ type features struct {
 	SLACK    bool `json:"slack"`
 	DISCORD  bool `json:"discord"`
 	PUSHOVER bool `json:"pushover"`
-	TEAMS    bool `json:"teams"`
+	TEAMS    bool `json:"teams"`	
+	TELEGRAM bool `json:"telegram"`
 }
 
 type analy struct {
@@ -199,7 +200,7 @@ func UsageStats(version string) bool {
 	day++ // track how long knary has been running for
 
 	// disgusting
-	dns, https, burp, slack, discord, pushover, teams := false, false, false, false, false, false, false
+	dns, https, burp, slack, discord, pushover, teams, telegram := false, false, false, false, false, false, false
 	if os.Getenv("DNS") == "true" {
 		dns = true
 	}
@@ -221,6 +222,9 @@ func UsageStats(version string) bool {
 	if os.Getenv("TEAMS_WEBHOOK") != "" {
 		teams = true
 	}
+	if os.Getenv("TELEGRAM_CHAT_ID") != "" && os.Getenv("TELEGRAM_TOKEN") != "" {
+		telegram = true
+	}
 
 	jsonValues, err := json.Marshal(&analy{
 		anonKnaryID,
@@ -237,6 +241,7 @@ func UsageStats(version string) bool {
 			discord,
 			pushover,
 			teams,
+			telegram
 		},
 	})
 
