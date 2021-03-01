@@ -105,6 +105,14 @@ func sendMsg(msg string) {
 			Printy(err.Error(), 2)
 		}
 	}
+	
+	if os.Getenv("TELEGRAM_TOKEN") != "" {
+		_, err := http.PostForm("https://api.telegram.org/bot" + os.Getenv("TELEGRAM_TOKEN") + "/sendMessage", url.Values{"chat_id": {os.Getenv("TELEGRAM_CHAT_ID")}, "text": {msg}})
+
+		if err != nil {
+                        Printy(err.Error(), 2)
+                }
+	}
 
 	// should be simple enough to add support for other webhooks here
 }
