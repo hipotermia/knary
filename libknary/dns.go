@@ -97,6 +97,7 @@ func parseDNS(m *dns.Msg, ipaddr string, EXT_IP string) {
 				}
 			}
 			if os.Getenv("DEBUG") == "true" {
+				Printy("kkkkk: "+q.Name, 3)
 				Printy("DNS question for: "+q.Name, 3)
 			}
 			
