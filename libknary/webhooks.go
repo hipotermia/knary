@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-func sendMsg(msg string) {
+func sendMsg(msg_orig string) {
 	// closes https://github.com/sudosammy/knary/issues/20
 	re := regexp.MustCompile(`\r?\n`)
-	msg = re.ReplaceAllString(msg, "\\n")
+	msg = re.ReplaceAllString(msg_orig, "\\n")
 
 	if os.Getenv("SLACK_WEBHOOK") != "" {
 		jsonMsg := []byte(`{"username":"knary","icon_emoji":":bird:","text":"` + msg + `"}`)
@@ -108,7 +108,7 @@ func sendMsg(msg string) {
 	}
 	
 	if os.Getenv("TELEGRAM_CHAT_ID") != "" && os.Getenv("TELEGRAM_TOKEN") != "" {
-		_, err := http.PostForm("https://api.telegram.org/bot" + os.Getenv("TELEGRAM_TOKEN") + "/sendMessage", url.Values{"chat_id": {os.Getenv("TELEGRAM_CHAT_ID")}, "text": {msg}})
+		_, err := http.PostForm("https://api.telegram.org/bot" + os.Getenv("TELEGRAM_TOKEN") + "/sendMessage", url.Values{"chat_id": {os.Getenv("TELEGRAM_CHAT_ID")}, "text": {msg_orig}})
 
 		if err != nil {
                         Printy(err.Error(), 2)
