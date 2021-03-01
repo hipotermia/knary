@@ -106,7 +106,7 @@ func sendMsg(msg string) {
 		}
 	}
 	
-	if os.Getenv("TELEGRAM_TOKEN") != "" {
+	if os.Getenv("TELEGRAM_CHAT_ID") != "" && os.Getenv("TELEGRAM_TOKEN") != "" {
 		_, err := http.PostForm("https://api.telegram.org/bot" + os.Getenv("TELEGRAM_TOKEN") + "/sendMessage", url.Values{"chat_id": {os.Getenv("TELEGRAM_CHAT_ID")}, "text": {msg}})
 
 		if err != nil {
