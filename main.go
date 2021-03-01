@@ -96,6 +96,9 @@ func main() {
 	if os.Getenv("TEAMS_WEBHOOK") != "" {
 		libknary.Printy("Posting to webhook: "+os.Getenv("TEAMS_WEBHOOK"), 1)
 	}
+	if os.Getenv("TELEGRAM_CHAT_ID") != "" && os.Getenv("TELEGRAM_TOKEN") != "" {
+                libknary.Printy("Posting to Telegram chat id: " + os.Getenv("TELEGRAM_CHAT_ID"), 1)
+        }
 
 	// these go after all the screen prining for neatness
 	libknary.CheckUpdate(VERSION, GITHUBVERSION, GITHUB)
