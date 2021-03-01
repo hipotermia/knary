@@ -2,16 +2,12 @@ package libknary
 
 import (
 	"bufio"
-	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"crypto/tls"
 	"encoding/base64"
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -155,7 +151,8 @@ func CheckTLSExpiry(domain string, config *tls.Config) (bool, error) {
 
 func HeartBeat(version string) (bool, error) {
 	// runs weekly (and on launch) to let people know we're alive (and show them the blacklist)
-	beatMsg += "❤️ Heartbeat (v" + version + ") ❤️\n"
+
+	beatMsg := "❤️ Heartbeat (v" + version + ") ❤️\n"
 
 	// print uptime
 	if day == 1 {
