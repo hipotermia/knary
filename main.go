@@ -15,8 +15,6 @@ import (
 
 const (
 	VERSION       = "2.3.3"
-	GITHUB        = "https://github.com/sudosammy/knary"
-	GITHUBVERSION = "https://raw.githubusercontent.com/sudosammy/knary/master/VERSION"
 )
 
 func main() {
@@ -29,7 +27,7 @@ func main() {
 	}
 
 	// start maintenance timers
-	libknary.StartMaintenance(VERSION, GITHUBVERSION, GITHUB)
+	libknary.StartMaintenance(VERSION)
 
 	// get IP for knary.mycanary.com to use for DNS answers
 	var EXT_IP string
@@ -64,7 +62,6 @@ func main() {
 
 	// load blacklist file & submit usage
 	libknary.LoadBlacklist()
-	go libknary.UsageStats(VERSION)
 
 	if os.Getenv("HTTP") == "true" {
 		libknary.Printy("Listening for http(s)://*."+os.Getenv("CANARY_DOMAIN")+" requests", 1)
@@ -97,12 +94,11 @@ func main() {
 		libknary.Printy("Posting to webhook: "+os.Getenv("TEAMS_WEBHOOK"), 1)
 	}
 	if os.Getenv("TELEGRAM_CHAT_ID") != "" && os.Getenv("TELEGRAM_TOKEN") != "" {
-                libknary.Printy("Posting to Telegram chat id: " + os.Getenv("TELEGRAM_CHAT_ID"), 1)
-        }
+        libknary.Printy("Posting to Telegram chat id: " + os.Getenv("TELEGRAM_CHAT_ID"), 1)
+    }
 
 	// these go after all the screen prining for neatness
-	libknary.CheckUpdate(VERSION, GITHUBVERSION, GITHUB)
-	libknary.HeartBeat(VERSION, true)
+	libknary.HeartBeat(VERSION)
 
 	// setup waitgroups for DNS/HTTP go routines
 	var wg sync.WaitGroup // there isn't actually any clean exit option, so we can just wait forever

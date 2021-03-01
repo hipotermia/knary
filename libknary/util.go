@@ -16,8 +16,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/blang/semver"
 )
 
 func stringContains(stringA string, stringB string) bool {
@@ -25,59 +23,6 @@ func stringContains(stringA string, stringB string) bool {
 		strings.ToLower(stringA),
 		strings.ToLower(stringB),
 	)
-}
-
-func CheckUpdate(version string, githubVersion string, githubURL string) (bool, error) { // this runs once a day
-	running, err := semver.Make(version)
-
-	if err != nil {
-		updFail := "Could not check for updates: " + err.Error()
-		Printy(updFail, 2)
-		logger("WARNING", updFail)
-		go sendMsg(":warning: " + updFail)
-		return false, err
-	}
-
-	c := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-	response, err := c.Get(githubVersion)
-
-	if err != nil {
-		updFail := "Could not check for updates: " + err.Error()
-		Printy(updFail, 2)
-		logger("WARNING", updFail)
-		go sendMsg(":warning: " + updFail)
-		return false, err
-	}
-
-	defer response.Body.Close()
-	scanner := bufio.NewScanner(response.Body) // refusing to import ioutil
-
-	for scanner.Scan() { // foreach line
-		current, err := semver.Make(scanner.Text())
-
-		if err != nil {
-			updFail := "Could not check for updates. GitHub response !semver format"
-			Printy(updFail, 2)
-			logger("WARNING", updFail)
-			return false, err
-		}
-
-		if running.Compare(current) != 0 {
-			updMsg := "Your version of knary is *" + version + "* & the latest is *" + current.String() + "* - upgrade your binary here: " + githubURL
-			Printy(updMsg, 2)
-			logger("WARNING", updMsg)
-			go sendMsg(":warning: " + updMsg)
-			return true, nil
-		}
-	}
-
-	logger("INFO", "Checked for updates...")
-	if os.Getenv("DEBUG") == "true" {
-		Printy("Checked for updates", 3)
-	}
-	return false, nil
 }
 
 // map for blacklist
@@ -156,116 +101,7 @@ func inBlacklist(needles ...string) bool {
 	return false
 }
 
-/*
-* This function collects very basic analytics to track knary usage.
-* If you have any thoughts about knary you can contact me on Twitter: @sudosammy
- */
-type features struct {
-	DNS      bool `json:"dns"`
-	HTTP     bool `json:"http"`
-	BURP     bool `json:"burp"`
-	SLACK    bool `json:"slack"`
-	DISCORD  bool `json:"discord"`
-	PUSHOVER bool `json:"pushover"`
-	TEAMS    bool `json:"teams"`	
-	TELEGRAM bool `json:"telegram"`
-}
-
-type analy struct {
-	ID        string `json:"id"`
-	Version   string `json:"version"`
-	Status    int    `json:"day"`
-	Blacklist int    `json:"blacklist"`
-	Offset    int    `json:"offset"`
-	Timezone  string `json:"timezone"`
-	features  `json:"features"`
-}
-
 var day = 0
-
-func UsageStats(version string) bool {
-	trackingDomain := "https://knary.sam.ooo" // make this an empty string to sinkhole analytics
-
-	if os.Getenv("CANARY_DOMAIN") == "" || trackingDomain == "" {
-		return false
-	}
-
-	// a unique & desensitised ID
-	knaryID := sha256.New()
-	_, _ = knaryID.Write([]byte(os.Getenv("CANARY_DOMAIN")))
-	anonKnaryID := hex.EncodeToString(knaryID.Sum(nil))
-
-	zone, offset := time.Now().Zone() // timezone
-
-	day++ // track how long knary has been running for
-
-	// disgusting
-	dns, https, burp, slack, discord, pushover, teams, telegram := false, false, false, false, false, false, false, false
-	if os.Getenv("DNS") == "true" {
-		dns = true
-	}
-	if os.Getenv("HTTP") == "true" {
-		https = true
-	}
-	if os.Getenv("BURP") == "true" {
-		burp = true
-	}
-	if os.Getenv("SLACK_WEBHOOK") != "" {
-		slack = true
-	}
-	if os.Getenv("DISCORD_WEBHOOK") != "" {
-		discord = true
-	}
-	if os.Getenv("PUSHOVER_USER") != "" {
-		pushover = true
-	}
-	if os.Getenv("TEAMS_WEBHOOK") != "" {
-		teams = true
-	}
-	if os.Getenv("TELEGRAM_CHAT_ID") != "" && os.Getenv("TELEGRAM_TOKEN") != "" {
-		telegram = true
-	}
-
-	jsonValues, err := json.Marshal(&analy{
-		anonKnaryID,
-		version,
-		day,
-		len(blacklistMap),
-		(offset / 60 / 60),
-		zone,
-		features{
-			dns,
-			https,
-			burp,
-			slack,
-			discord,
-			pushover,
-			teams,
-			telegram,
-		},
-	})
-
-	if err != nil {
-		if os.Getenv("DEBUG") == "true" {
-			Printy(err.Error(), 3)
-		}
-		return false
-	}
-
-	c := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-	_, err = c.Post(trackingDomain, "application/json", bytes.NewBuffer(jsonValues))
-
-	if err != nil {
-		if os.Getenv("DEBUG") == "true" {
-			Printy(err.Error(), 3)
-		}
-		return false
-	}
-
-	return true
-}
 
 func CheckTLSExpiry(domain string, config *tls.Config) (bool, error) {
 	port := "443"
@@ -317,20 +153,9 @@ func CheckTLSExpiry(domain string, config *tls.Config) (bool, error) {
 	return true, nil
 }
 
-func HeartBeat(version string, firstrun bool) (bool, error) {
+func HeartBeat(version string) (bool, error) {
 	// runs weekly (and on launch) to let people know we're alive (and show them the blacklist)
-	beatMsg := "```"
-	if firstrun {
-		beatMsg += ` __                           
-|  |--.-----.---.-.----.--.--.
-|    <|     |  _  |   _|  |  |
-|__|__|__|__|___._|__| |___  |` + "\n"
-		beatMsg += ` @sudosammy     v` + version + ` `
-		beatMsg += `|_____|`
-		beatMsg += "\n\n"
-	} else {
-		beatMsg += "❤️ Heartbeat (v" + version + ") ❤️\n"
-	}
+	beatMsg += "❤️ Heartbeat (v" + version + ") ❤️\n"
 
 	// print uptime
 	if day == 1 {
@@ -357,7 +182,6 @@ func HeartBeat(version string, firstrun bool) (bool, error) {
 	if os.Getenv("BURP") == "true" {
 		beatMsg += "Working in collaborator compatibility mode on domain *." + os.Getenv("BURP_DOMAIN") + "\n"
 	}
-	beatMsg += "```"
 
 	go sendMsg(beatMsg)
 

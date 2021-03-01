@@ -6,9 +6,7 @@ import (
 	"crypto/tls"
 )
 
-func dailyTasks(version string, githubVersion string, githubURL string) bool {
-	// check for updates
-	CheckUpdate(version, githubVersion, githubURL)
+func dailyTasks() bool {
 
 	// if blacklist alerting is enabled, flag any old blacklist items
 	if os.Getenv("BLACKLIST_ALERTING") == "" || os.Getenv("BLACKLIST_ALERTING") == "true" {
@@ -25,13 +23,10 @@ func dailyTasks(version string, githubVersion string, githubURL string) bool {
 		CheckTLSExpiry(os.Getenv("CANARY_DOMAIN"), conf)
 	}
 
-	// log knary usage
-	UsageStats(version)
-
 	return true
 }
 
-func StartMaintenance(version string, githubVersion string, githubURL string) {
+func StartMaintenance(version string) {
 	// https://stackoverflow.com/questions/16466320/is-there-a-way-to-do-repetitive-tasks-at-intervals-in-golang
 	dailyTicker := time.NewTicker(24 * time.Hour)
 	hbTicker := time.NewTicker(24 * 7 * time.Hour) // once a week
@@ -40,9 +35,9 @@ func StartMaintenance(version string, githubVersion string, githubURL string) {
 		for {
 			select {
 			case <-dailyTicker.C:
-				dailyTasks(version, githubVersion, githubURL)
+				dailyTasks()
 			case <-hbTicker.C:
-				HeartBeat(version, false)
+				HeartBeat(version)
 			case <-quit:
 				dailyTicker.Stop()
 				hbTicker.Stop()

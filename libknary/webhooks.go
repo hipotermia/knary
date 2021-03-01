@@ -12,7 +12,6 @@ import (
 )
 
 func sendMsg(msg string) {
-	Printy("hello", 2)
 	// closes https://github.com/sudosammy/knary/issues/20
 	re := regexp.MustCompile(`\r?\n`)
 	msg = re.ReplaceAllString(msg, "\\n")
