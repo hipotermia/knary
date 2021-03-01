@@ -14,7 +14,7 @@ import (
 func sendMsg(msg_orig string) {
 	// closes https://github.com/sudosammy/knary/issues/20
 	re := regexp.MustCompile(`\r?\n`)
-	msg = re.ReplaceAllString(msg_orig, "\\n")
+	msg := re.ReplaceAllString(msg_orig, "\\n")
 
 	if os.Getenv("SLACK_WEBHOOK") != "" {
 		jsonMsg := []byte(`{"username":"knary","icon_emoji":":bird:","text":"` + msg + `"}`)
