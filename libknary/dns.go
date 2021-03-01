@@ -99,10 +99,13 @@ func parseDNS(m *dns.Msg, ipaddr string, EXT_IP string) {
 			if os.Getenv("DEBUG") == "true" {
 				Printy("DNS question for: "+q.Name, 3)
 			}
+			
+			Printy("caca", 3)
 
 			if !inBlacklist(q.Name, ipaddr) {
 				// spit the IP address to remove the port
 				// be wary of IPv6
+				Printy("kkk", 3)
 				ipSlice := strings.Split(ipaddr, ":")
 				ipSlice = ipSlice[:len(ipSlice)-1]
 				ipaddrNoPort := strings.Join(ipSlice[:], ",")
@@ -110,6 +113,7 @@ func parseDNS(m *dns.Msg, ipaddr string, EXT_IP string) {
 				reverse, _ := dns.ReverseAddr(ipaddrNoPort)
 
 				if reverse == "" {
+					Printy("ooo", 3)
 					go sendMsg("DNS: " + q.Name +
 						"```" +
 						"From: " + ipaddr +
