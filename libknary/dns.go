@@ -110,18 +110,14 @@ func parseDNS(m *dns.Msg, ipaddr string, EXT_IP string) {
 				reverse, _ := dns.ReverseAddr(ipaddrNoPort)
 
 				if reverse == "" {
-					go sendMsg("DNS: " + q.Name +
-						"```" +
-						"From: " + ipaddr +
-						"```")
+					go sendMsg("[+] DNS: " + q.Name + "\n" +
+						"\tFrom: " + ipaddr)
 					logger("INFO", ipaddr+" - "+q.Name)
 
 				} else {
-					go sendMsg("DNS: " + q.Name +
-						"```" +
-						"From: " + ipaddr + "\n" +
-						"PTR: " + reverse +
-						"```")
+					go sendMsg("[+] DNS: " + q.Name + "\n" +
+						"\tFrom: " + ipaddr + "\n" +
+						"\tPTR: " + reverse)
 					logger("INFO", ipaddr+" - "+reverse+" - "+q.Name)
 				}
 			}

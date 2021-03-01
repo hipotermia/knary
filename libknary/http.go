@@ -195,11 +195,11 @@ func handleRequest(conn net.Conn) bool {
 			}
 
 			if !inBlacklist(host, conn.RemoteAddr().String(), fwd) {
-				msg := fmt.Sprintf("%s\n```Query: %s\n%s\nFrom: %s", host, query, userAgent, conn.RemoteAddr().String())
+				msg := fmt.Sprintf("%s\nQuery: %s\n%s\nFrom: %s", host, query, userAgent, conn.RemoteAddr().String())
 				if fwd != "" {
 					msg += "\nX-Forwarded-For: " + fwd
 				}
-				go sendMsg(msg + "```")
+				go sendMsg(msg)
 
 				if fwd != "" {
 					logger("INFO", fwd+" - "+host)
