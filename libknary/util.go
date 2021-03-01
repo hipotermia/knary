@@ -200,7 +200,7 @@ func UsageStats(version string) bool {
 	day++ // track how long knary has been running for
 
 	// disgusting
-	dns, https, burp, slack, discord, pushover, teams, telegram := false, false, false, false, false, false, false
+	dns, https, burp, slack, discord, pushover, teams, telegram := false, false, false, false, false, false, false, false
 	if os.Getenv("DNS") == "true" {
 		dns = true
 	}
@@ -241,7 +241,7 @@ func UsageStats(version string) bool {
 			discord,
 			pushover,
 			teams,
-			telegram
+			telegram,
 		},
 	})
 
