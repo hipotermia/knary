@@ -11,6 +11,7 @@ import (
 )
 
 func sendMsg(msg string) {
+	Printy("hello", 2)
 	// closes https://github.com/sudosammy/knary/issues/20
 	re := regexp.MustCompile(`\r?\n`)
 	msg = re.ReplaceAllString(msg, "\\n")
@@ -107,6 +108,7 @@ func sendMsg(msg string) {
 	}
 	
 	if os.Getenv("TELEGRAM_CHAT_ID") != "" && os.Getenv("TELEGRAM_TOKEN") != "" {
+		Printy("sending", 2)
 		_, err := http.PostForm("https://api.telegram.org/bot" + os.Getenv("TELEGRAM_TOKEN") + "/sendMessage", url.Values{"chat_id": {os.Getenv("TELEGRAM_CHAT_ID")}, "text": {msg}})
 
 		if err != nil {
