@@ -59,6 +59,9 @@ Example config files can be found in `examples/`
 * `PUSHOVER_USER` __Optional__ The user token of the Pushover user you want knary to nofify
 * `LARK_WEBHOOK` __Optional__ The full URL of the [webhook](https://www.feishu.cn/hc/en-US/articles/360024984973-Bot-Use-bots-in-groups) for the Lark/Feishu bot you want knary to notify
 * `LARK_SECRET` __Optional__ The [secret token](https://www.feishu.cn/hc/en-US/articles/360024984973-Bot-Use-bots-in-groups) used to sign messages to your Lark/Feishu bot
+* `TELEGRAM_TOKEN` __Optional__ The [secret token](https://core.telegram.org/bots/api) used to send messages to your Telegram bot
+* `TELEGRAM_CHAT_ID` __Optional__ The [chat id](https://core.telegram.org/bots/api) where to send Telegram messages
+
 
 ### Burp Collaborator Config
 If you are running Burp Collaborator on the same server as knary, you will need to configure the following.
